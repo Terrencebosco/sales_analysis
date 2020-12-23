@@ -26,3 +26,15 @@ to convert sql to sqlite3 for ease of use: [converter](https://github.com/Terren
 cd -> utilites/mysql2sqlite
 
 terminal -> ./mysql2sqlite dump_mysql.sql | sqlite3 mysqlite3.db
+
+---
+
+created fucntion that converts sql tables to panda dataframes then stores those dataframes in a dictionary to ease of access.
+
+---
+
+TODO:
+    merge all data 
+    EDA
+    Visual
+    plotyl dash?
