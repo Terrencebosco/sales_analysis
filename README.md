@@ -61,3 +61,4 @@ TODO:
     EDA
     Visual
     plotyl dash?
+    look into making plots by yearly distrobution
