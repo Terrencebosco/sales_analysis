@@ -1,1 +1,1 @@
-web: gunicorn dash_app:APP -t 120
+web: gunicorn dash_app:server -t 120

@@ -6,76 +6,74 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-def create_app():
-    app = dash.Dash(__name__)
-    server = app.server
 
-    df = pd.read_csv('dash_app/db_csv.csv')
+app = dash.Dash(__name__)
+server = app.server
 
-    # grouped_sum = df.groupby(['year','markets_name', 'custmer_name'])[['sales_amount']].sum()
+df = pd.read_csv('dash_app/db_csv.csv')
 
-    # -----
-    # app.layout
+# grouped_sum = df.groupby(['year','markets_name', 'custmer_name'])[['sales_amount']].sum()
 
-    app.layout = html.Div([
+# -----
+# app.layout
 
-        html.H1("web application, sales by year", style={'text-align':'center'}),
+app.layout = html.Div([
 
-        dcc.Dropdown(
-            id='year',
-            options=[
-                {"label": "2020", "value":2020},
-                {"label": "2019", "value":2019},
-                {"label": "2018", "value":2018},
-                {"label": "2017", "value":2017}],
+    html.H1("web application, sales by year", style={'text-align':'center'}),
 
-            multi=False,
-            value=2020,
-            style={'width':'40%'}
-            ),
+    dcc.Dropdown(
+        id='year',
+        options=[
+            {"label": "2020", "value":2020},
+            {"label": "2019", "value":2019},
+            {"label": "2018", "value":2018},
+            {"label": "2017", "value":2017}],
 
-        html.Div(id='output_container', children=[]),  # output 1
-        html.Br(),
+        multi=False,
+        value=2020,
+        style={'width':'40%'}
+        ),
 
-        dcc.Graph(id='revenue', figure={})  # output 2
-    ])
+    html.Div(id='output_container', children=[]),  # output 1
+    html.Br(),
 
-    # -----
-    # connect the plotly graph with dash components
+    dcc.Graph(id='revenue', figure={})  # output 2
+])
 
-    @app.callback(
-        # outputs 1 & 2
-        [Output(component_id='output_container', component_property='children'),
-        Output(component_id='revenue', component_property='figure')],
+# -----
+# connect the plotly graph with dash components
 
-        # input from user
-        [Input(component_id='year', component_property='value')]
-    )
+@app.callback(
+    # outputs 1 & 2
+    [Output(component_id='output_container', component_property='children'),
+    Output(component_id='revenue', component_property='figure')],
 
-    # if we had two inputs we would need two arguments. since we only have one input
-    # we have one argument // TODO play with two inputs. (refers to input value)
+    # input from user
+    [Input(component_id='year', component_property='value')]
+)
 
-    def update_graph(option_selected):
-        print(option_selected)
-        print((type(option_selected)))
+# if we had two inputs we would need two arguments. since we only have one input
+# we have one argument // TODO play with two inputs. (refers to input value)
 
-        container = "year: {}".format(option_selected)
+def update_graph(option_selected):
+    print(option_selected)
+    print((type(option_selected)))
 
-        dff = df.copy()
-        dff = dff[dff['year']== option_selected]
+    container = "year: {}".format(option_selected)
 
-        fig = px.pie(
-            dff,
-            values='sales_amount',
-            names='markets_name',
-            title=f'revenue by market for year {option_selected}'
-            )
+    dff = df.copy()
+    dff = dff[dff['year']== option_selected]
 
-        return container, fig
+    fig = px.pie(
+        dff,
+        values='sales_amount',
+        names='markets_name',
+        title=f'revenue by market for year {option_selected}'
+        )
 
-    return app
+    return container, fig
+
+
 
 if __name__ == '__main__':
-
-    APP = create_app()
-    APP.run_server()
+  app.run_server()
