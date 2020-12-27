@@ -35,6 +35,8 @@ created fucntion that converts sql tables to panda dataframes then stores those 
 
 ## created web application with heroku.
 
+[documentation](https://dash.plotly.com/)
+
 to get it running i ran into several errors. one being a time out error but the command `git config http.postBuffer 524288000`
 
 another error was the pathing from the procfile to the application. ( i didnt use create_app() this time, maybe that was my problem?)
