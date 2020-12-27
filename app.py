@@ -10,7 +10,7 @@ from dash.dependencies import Input, Output
 app = dash.Dash(__name__)
 server = app.server
 
-df = pd.read_csv('dash_app/db_csv.csv')
+df = pd.read_csv('db_csv.csv')
 
 # -----
 # app.layout
