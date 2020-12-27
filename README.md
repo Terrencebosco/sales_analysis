@@ -33,8 +33,31 @@ created fucntion that converts sql tables to panda dataframes then stores those 
 
 ---
 
+## created web application with heroku.
+
+to get it running i ran into several errors. one being a time out error but the command `git config http.postBuffer 524288000`
+
+another error was the pathing from the procfile to the application. ( i didnt use create_app() this time, maybe that was my problem?)
+
+pushing to heroku as follows:
+
+    heroku create -n name
+
+    git init
+
+    git add .
+
+    git commit -m "comment"
+
+    git push origin main
+
+    git push heroku main
+
+
+
+
 TODO:
-    merge all data 
+    merge all data
     EDA
     Visual
     plotyl dash?
