@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output
 
 def create_app():
     app = dash.Dash(__name__)
+    server = app.server
 
     df = pd.read_csv('dash_app/db_csv.csv')
 
