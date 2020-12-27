@@ -12,8 +12,6 @@ server = app.server
 
 df = pd.read_csv('dash_app/db_csv.csv')
 
-# grouped_sum = df.groupby(['year','markets_name', 'custmer_name'])[['sales_amount']].sum()
-
 # -----
 # app.layout
 
