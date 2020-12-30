@@ -10,7 +10,14 @@ from dash.dependencies import Input, Output
 app = dash.Dash(__name__)
 server = app.server
 
+months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 df = pd.read_csv('db_csv.csv')
+
+month_year_group = df.groupby(['year','month_name'])['sales_amount'].sum()
+month_year_group = month_year_group.reindex(months, level='month_name').reset_index()
+# fig = px.line(month_year_group[3:], x="month_name", y='sales_amount', color='year')
+# fig.update_xaxes(type='category', tick0='January')
+# fig.show()
 
 # -----
 # app.layout
@@ -35,7 +42,8 @@ app.layout = html.Div([
     html.Div(id='output_container', children=[]),  # output 1
     html.Br(),
 
-    dcc.Graph(id='revenue', figure={})  # output 2
+    dcc.Graph(id='revenue', figure={}),
+    dcc.Graph(id='month_year', figure={})  # output 2
 ])
 
 # -----
@@ -44,7 +52,8 @@ app.layout = html.Div([
 @app.callback(
     # outputs 1 & 2
     [Output(component_id='output_container', component_property='children'),
-    Output(component_id='revenue', component_property='figure')],
+    Output(component_id='revenue', component_property='figure'),
+    Output(component_id='month_year', component_property='figure')],
 
     # input from user
     [Input(component_id='year', component_property='value')]
@@ -52,6 +61,7 @@ app.layout = html.Div([
 
 # if we had two inputs we would need two arguments. since we only have one input
 # we have one argument // TODO play with two inputs. (refers to input value)
+# play with layout of dashboard
 
 def update_graph(option_selected):
     print(option_selected)
@@ -68,8 +78,10 @@ def update_graph(option_selected):
         names='markets_name',
         title=f'revenue by market for year {option_selected}'
         )
+    fig2 = px.line(month_year_group[3:], x="month_name", y='sales_amount', color='year')
+    fig2.update_xaxes(type='category', tick0='January')
 
-    return container, fig
+    return container, fig2, fig
 
 
 
