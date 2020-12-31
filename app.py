@@ -43,7 +43,9 @@ app.layout = dbc.Container([
                 style={'width':'40%'}
                 ),
 
-            dcc.Graph(id='revenue', figure={})], width={'size':5, 'offset':0}),
+            dcc.Graph(id='revenue', figure={})],
+            xs=12, sm=12, md=12, lg=6, xl=6
+                ),
 
        dbc.Col([
 
@@ -52,7 +54,9 @@ app.layout = dbc.Container([
                                    for x in sorted(month_year_group['year'].unique())],
                           labelClassName="mr-3"),
 
-            dcc.Graph(id='month_year', figure={})])
+            dcc.Graph(id='month_year', figure={})],
+            xs=12, sm=12, md=12, lg=6, xl=6
+                )
 
     ], justify='center'),
 
@@ -75,8 +79,6 @@ app.layout = dbc.Container([
 )
 
 def update_graph(option_selected):
-    print(option_selected)
-    print((type(option_selected)))
 
     dff = df.copy()
     dff = dff[dff['year']== option_selected]
@@ -106,4 +108,4 @@ def update_graph(values):
     return fig2
 
 if __name__ == '__main__':
-  app.run_server()
+  app.run_server(debug=True)
