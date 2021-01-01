@@ -9,12 +9,14 @@ import dash_bootstrap_components as dbc
 
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],
-meta_tags=[{'name': 'viewport',
-'content': 'width-device-didth, initial-scale-1.0'}])
+                meta_tags=[{'name': 'viewport',
+                'content': 'width-device-didth, initial-scale-1.0'}])
 
 server = app.server
 
-months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+months = ['January','February','March','April','May','June'
+        ,'July','August','September','October','November','December']
+
 df = pd.read_csv('db_csv.csv')
 df = df[df['year']!=2017]
 

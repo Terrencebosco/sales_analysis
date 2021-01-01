@@ -1,5 +1,11 @@
 # sales_analysis
 
+## Application Link:
+
+[link to application](https://tb-dash.herokuapp.com/)
+
+`https://tb-dash.herokuapp.com/`
+
 started work with sales data.
 
 converted sql fiel to sqlite for ease of access with python. (better way?). installed and played with mysql via command line.
@@ -57,14 +63,20 @@ pushing to heroku as follows:
 
     git push heroku main
 
-also created allies script to add commi and push to with git `git cmp "comment"`
+also created allies script to add commi and push to with git `git cmp "comment"`\
+
+
 
 
 
 
 TODO:
-    merge all data
-    EDA
-    Visual
-    plotyl dash?
-    look into making plots by yearly distrobution
+- ~~merge all data~~
+- EDA
+    - company data
+    - month
+    - year
+
+- Visual
+- ~~plotyl dash?~~
+- look into making plots by yearly distrobution
