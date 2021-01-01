@@ -63,15 +63,6 @@ app.layout = dbc.Container([
                 ),
 
         dbc.Col([
-        #     dcc.Dropdown(
-        #         id='year3',
-        #         options=[{'label':x, 'value':x}
-        #                            for x in sorted(month_year_group['year'].unique())],
-        #         multi=False,
-        #         value=2020,
-        #         style={'width':'40%'}
-        #         ),
-
             dcc.Graph(id='customer_type', figure={})],
             xs=12, sm=12, md=12, lg=6, xl=6
                 )
