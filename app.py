@@ -187,13 +187,12 @@ def update_graph(option_selected):
     Input('market', 'value')]
 )
 
-# bar_product_market
-# year, market, look_at
 def update_graph(year, look_at, market):
 
+    # data query
     dff = df.query(f'year=={year}')
     total_products = total_products = len(dff[dff['markets_name']==market]['product_code'].unique())
-#     look_at = 5
+
     temp = dff[dff['markets_name']==market]['product_code'].value_counts().head(look_at)
     fig = px.bar(temp, y=temp.values, x=temp.index,
                  title=f'top {look_at} out of {total_products} products sold in {market}')
@@ -235,3 +234,9 @@ if __name__ == '__main__':
 
     #TODO
     # check spelling of custmer_names to customer_names. line142
+    # figure out how to do multiple pages so we can brake this down in a cleaner
+    # manner, probably 3 pages?
+        # year break down,
+        # market breakdown,
+        # product? client?
+    ## clean up the code, there are things that i can mek this look cleaner.

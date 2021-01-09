@@ -37,7 +37,7 @@ terminal -> ./mysql2sqlite dump_mysql.sql | sqlite3 mysqlite3.db
 
 created fucntion that converts sql tables to panda dataframes then stores those dataframes in a dictionary to ease of access.
 
-add conda env to kernal `python -m ipykernel install --user --name dash --display-name "Python (dash)"`
+add conda env to kernal `python -m ipykernel install --user --name <name of env?> --display-name "<name of kernal>"`
 
 ---
 
@@ -63,7 +63,7 @@ pushing to heroku as follows:
 
     git push heroku main
 
-also created allies script to add commi and push to with git `git cmp "comment"`\
+also created allies script to add commi and push to with git `git cmp "comment"`
 
 
 
