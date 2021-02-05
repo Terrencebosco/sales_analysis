@@ -1,0 +1,11 @@
+id,markets_list,state,sales_amount
+0,['Hyderabad'],Telangana,2844071.0
+7,['Delhi NCR'],NCT of Delhi,171754629.0
+9,"['Kanpur', 'Lucknow']",Uttar Pradesh,5131111.0
+10,['Patna'],Bihar,1013463.0
+21,['Bhubaneshwar'],Odisha,382963.0
+23,['Bhopal'],Madhya Pradesh,22823239.0
+24,"['Ahmedabad', 'Surat']",Gujarat,47723349.0
+27,"['Mumbai', 'Nagpur']",Maharashtra,72551618.0
+32,['Kochi'],Kerala,7103903.0
+33,['Chennai'],Tamil Nadu,5123768.0
