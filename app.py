@@ -1,264 +1,76 @@
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
+import json
 
+import plotly.express as px
+import pandas as pd
+import pathlib
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],
+import dash
+import dash_bootstrap_components as dbc
+
+# meta_tags are required for the app layout to be mobile responsive
+app = dash.Dash(__name__, suppress_callback_exceptions=True,
+                external_stylesheets=[dbc.themes.FLATLY],
                 meta_tags=[{'name': 'viewport',
-                'content': 'width-device-didth, initial-scale-1.0'}])
-
+                            'content': 'width=device-width, initial-scale=1.0'}]
+                )
 server = app.server
 
-months = ['January','February','March','April','May','June'
-        ,'July','August','September','October','November','December']
+# read in csv from datasets folder.
+PATH = pathlib.Path(__file__).parent
+# DATA_PATH = PATH.joinpath("notebooks").resolve()
 
-## do this before loading in data ##
-df = pd.read_csv('db_csv.csv')
-df = df[df['year']!=2017]
+# load csvs
+df = pd.read_csv(DATA_PATH.joinpath("updated_data.csv"))
 
-month_year_group = df.groupby(['year','month_name'])['sales_amount'].sum()
-month_year_group = month_year_group.reindex(months, level='month_name').reset_index()
+month_year_group = pd.read_csv(DATA_PATH.joinpath("year_sales_group.csv"))
 
-app.layout = dbc.Container([
-    # header
+#load in new geo_json
+with open('notebooks/states_india.geojson.json') as f:
+    india_geojson = json.load(f)
+
+layout= dbc.Container([
     dbc.Row([
-            dbc.Col(html.H1("web application, sales by year",
-            style={'text-align':'center'},
-            className='mb-5'),width=12)
-    ]),
-
-    # year revenue over time
-    dbc.Row([
-
-            dbc.Col([
-
-            dcc.Checklist(id='year2', value=[2018,2019,2020],
+        dbc.Col([
+           dcc.Checklist(id='year', value=[2020,2019,2018],
                           options=[{'label':x, 'value':x}
                                    for x in sorted(month_year_group['year'].unique())],
                           labelClassName="mr-3"),
 
-            dcc.Graph(id='month_year', figure={})],
-            xs=12, sm=12, md=12, lg=12, xl=12
-                )
-            ]),
-# ])
-    # second row of graphs
-    dbc.Row([
-
-        # pie: year breakdown revenue by market
-        dbc.Col([
-             dcc.Input(
-                id='look_at',
-                placeholder='Value between 0 and 259',
-                type='number',
-                value=5,
-                min=0,
-                max=259
+                dcc.Graph(id='geo', figure={})],
+                xs=12, sm=12, md=12, lg=12, xl=12,
                 ),
-
-            dcc.Graph(id='product_sales', figure={})],
-            xs=12, sm=12, md=12, lg=6, xl=6
-                ),
-
-        dbc.Col([
-            dcc.Graph(id='product_sales_pie', figure={})],
-            xs=12, sm=12, md=12, lg=6, xl=6
-        )
-
-    ], align='center'),
+    ])
 ])
-#     dbc.Row([
-#         dbc.Col([
 
-#             dcc.Dropdown(
-#                 id='year3',
-#                 options=[{'label':x, 'value':x}
-#                                    for x in sorted(month_year_group['year'].unique())],
-#                 multi=False,
-#                 value=2020,
-#                 style={'width':'62%'}
-#                 ),
-
-#             dcc.Input(
-#                 id='look_at',
-#                 placeholder='Value between 0 and 259',
-#                 type='number',
-#                 value=5,
-#                 min=0,
-#                 max=259
-#                 ),
-
-#             dcc.Dropdown(
-#                 id='market',
-#                 options=[{'label':x, 'value':x}
-#                                    for x in sorted(df['markets_name'].unique())],
-#                 multi=False,
-#                 value='Mumbai',
-#                 style={'width':'62%'}
-#                 ),
-
-#             dcc.Graph(id='market_product_bar', figure={})],
-#             xs=12, sm=12, md=12, lg=6, xl=6
-#                 ),
-
-#         dbc.Col([
-#             dcc.Graph(id='market_product_pie', figure={})],
-#             xs=12, sm=12, md=12, lg=6, xl=6
-#                 )
-
-#         ],align='center')
-
-
-
-
-# ----- figure 1 call back and plot
 @app.callback(
     # outputs 1
-    Output('product_sales','figure'),
+    Output('geo','figure'),
     # input from user
-    [Input('year2', 'value'),
-    Input('look_at', 'value')]
+    Input('year', 'value')
 )
 
-def update_graph(year, look_at):
+def update_graph(values):
+    temp = df[df['year'].isin(values)]
 
-    if year == None:
-        year = 2018
-
-    temp = df[df['year'].isin(year)]
-    product_group = temp.groupby('product_code')['sales_amount'] \
-    .sum().reset_index().sort_values('sales_amount',ascending=False)[:look_at]
-
-    fig = px.bar(product_group, y='sales_amount', x='product_code')
-
+    t = temp.groupby(['state_code', 'markets_list', 'state'])['sales_amount'].sum()
+    t = t.reset_index()
+    fig = px.choropleth_mapbox(
+            t,
+            locations='state_code',
+            geojson=india_geojson,
+            mapbox_style="carto-positron",
+            color='sales_amount',
+            color_continuous_scale='bugn',
+            center={"lat": 20, "lon": 77},
+            hover_data=['state'],
+            zoom=3,
+            opacity=1)
     return fig
-
-
-# ------ figure 2 call back and plot
-@app.callback(
-    Output('month_year', 'figure'),
-    Input('year2', 'value')
-)
-
-def update_graph(year):
-    temp = month_year_group[month_year_group['year'].isin(year)]
-    fig2 = px.line(temp, x="month_name", y='sales_amount', color='year')
-    fig2.update_xaxes(type='category', tick0='January')
-    fig2.update_layout(hovermode="x")
-    return fig2
-
-
-# ----- figure 3 -----
-@app.callback(
-    # outputs 1
-    Output('product_sales_pie','figure'),
-    # input from user
-    [Input('year2', 'value'),
-    Input('look_at', 'value')]
-)
-
-def update_graph(year, look_at):
-
-    if look_at == None:
-        look_at = 0
-
-    temp = df[df['year'].isin(year)]
-    product_group = temp.groupby('product_code')['sales_amount'].sum().reset_index() \
-    .sort_values('sales_amount',ascending=False)
-
-    total = len(temp['product_code'].unique())
-    zeros = np.zeros(total)
-    pull = [.1] * look_at
-    test = list(np.concatenate([pull, zeros[look_at:]]))
-
-    explode = len(product_group['product_code'].unique())
-
-    fig = go.Figure(data=[go.Pie(labels=product_group['product_code'], values=product_group['sales_amount'], pull=test)])
-    fig.update_traces(textposition='inside', textinfo='percent+label')\
-
-    return fig
-
-# def update_graph(option_selected):
-#     dff = df.copy()
-#     dff = dff[dff['year']== option_selected]
-
-#     customer_type_sum = dff.groupby(['customer_type'])['sales_amount'].sum().reset_index()
-#     bm = customer_type_sum.iloc[0][1].round(2)
-#     ec = customer_type_sum.iloc[1][1].round(2)
-
-#     customer_sales = dff.groupby(['custmer_name','customer_type'])['sales_amount'].sum().reset_index()
-
-#     fig = px.bar(customer_sales, x='custmer_name', y='sales_amount', color='customer_type',
-#                 title = f'Brick & Mortar sales: {bm:,} , E-Commerce sales: {ec:,}')
-#     fig.update_layout(hovermode="x")
-
-#     return fig
-
-# # ----- figure 4 -----
-# @app.callback(
-#     Output('market_product_bar', 'figure'),
-#     [Input('year3', 'value'),
-#     Input('look_at', 'value'),
-#     Input('market', 'value')]
-# )
-
-# def update_graph(year, look_at, market):
-
-#     # data query
-#     dff = df.query(f'year=={year}')
-#     total_products = total_products = len(dff[dff['markets_name']==market]['product_code'].unique())
-
-#     temp = dff[dff['markets_name']==market]['product_code'].value_counts().head(look_at)
-#     fig = px.bar(temp, y=temp.values, x=temp.index,
-#                  title=f'top {look_at} out of {total_products} products sold in {market}')
-
-#     return fig
-
-# # ----- figure 5 ----
-# @app.callback(
-#     Output('market_product_pie', 'figure'),
-#     [Input('year3', 'value'),
-#     Input('look_at', 'value'),
-#     Input('market', 'value')]
-# )
-
-# def update_graph(year, look_at, market):
-
-#     #data
-#     dff = df.query(f'year=={year}')
-
-#     # get n out of total to show percent of total
-#     total = len(dff['product_code'].unique())
-#     zeros = np.zeros(total)
-#     pull = [.1] * int(look_at)
-#     test = list(np.concatenate([pull, zeros[10:]]))
-
-#     # expand 'look_at' amount for pie chart
-#     explode = len(dff['product_code'].unique())
-#     product_out_of_100 = dff[dff['markets_name']==market]['product_code'].value_counts()
-
-#     product_out_of_100.sum()
-#     fig = go.Figure(data=[go.Pie(labels=product_out_of_100.index, values=product_out_of_100.values, pull=test)])
-#     fig.update_traces(textposition='inside', textinfo='percent+label')
-
-#     return fig
 
 if __name__ == '__main__':
-
     app.run_server(debug=True)
-
-    #TODO
-    # check spelling of custmer_names to customer_names. line142
-    # figure out how to do multiple pages so we can brake this down in a cleaner
-    # manner, probably 3 pages?
-        # year break down,
-        # market breakdown,
-        # product? client?
-    ## clean up the code, there are things that i can mek this look cleaner.
